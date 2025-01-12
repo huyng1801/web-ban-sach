@@ -1,35 +1,49 @@
 import React, { useEffect } from 'react';
-import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, Typography, IconButton, Button } from '@mui/material';
+import {
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+} from '@mui/material';
 import { Category, ShoppingCart, Person, Receipt, Menu } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
 const drawerWidth = 240;
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  // Get the user's role from Redux store or any state management
+
+  // Lấy thông tin người dùng từ Redux store hoặc trạng thái quản lý
   const user = useSelector((state) => state.user.userInfo);
   const role = user?.role;
 
   useEffect(() => {
     console.log(user);
-    // Redirect to the user page if the role is not admin
-    // if (role !== 'ROLE_ADMIN') {
-    //   navigate('/user');
-    // }
+    // Chuyển hướng đến trang người dùng nếu vai trò không phải admin
+    if (role !== 'ROLE_ADMIN') {
+      navigate('/user');
+    }
   }, [role, navigate]);
 
   const menuItems = [
-    { text: 'Categories', icon: <Category />, path: '/admin/categories' },
-    { text: 'Products', icon: <ShoppingCart />, path: '/admin/products' },
-    { text: 'Orders', icon: <Receipt />, path: '/admin/orders' },
-    { text: 'Users', icon: <Person />, path: '/admin/users' },
+    { text: 'Danh mục', icon: <Category />, path: '/admin/categories' },
+    { text: 'Sản phẩm', icon: <ShoppingCart />, path: '/admin/products' },
+    { text: 'Đơn hàng', icon: <Receipt />, path: '/admin/orders' },
+    { text: 'Người dùng', icon: <Person />, path: '/admin/users' },
   ];
 
   const handleLogout = () => {
-    // Logic for logout (e.g., clear user session, tokens, etc.)
-    navigate('/'); // Redirect to the login page
+    // Xử lý đăng xuất (ví dụ: xóa phiên người dùng, token, v.v.)
+    navigate('/'); // Chuyển hướng đến trang đăng nhập
   };
 
   const drawer = (
@@ -59,7 +73,7 @@ const AdminLayout = ({ children }) => {
             <Menu />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Admin Dashboard
+            Bảng Điều Khiển Quản Trị
           </Typography>
           <Button color="inherit" onClick={handleLogout}>
             Đăng Xuất

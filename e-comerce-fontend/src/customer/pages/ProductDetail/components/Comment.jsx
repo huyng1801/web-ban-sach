@@ -31,38 +31,53 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+const Comment = ({ comment, handleReplyComment, handleDeleteComment }) => {
+  const userId = useSelector(userid); // Get logged-in user's ID
 
-// Comment display component
-const Comment = ({ comment, handleReplyComment }) => (
-  <Paper elevation={1} style={{ padding: "16px", marginBottom: "8px" }}>
-    <Typography variant="body1">
-      <strong>{comment.author}</strong>
-    </Typography>
-    <Typography variant="body2" color="textSecondary">
-      {comment.date}
-    </Typography>
-    <Typography variant="body1" style={{ marginTop: "8px" }}>
-      {comment.content}
-    </Typography>
-    <Button
-      style={{ marginTop: "8px" }}
-      onClick={() => handleReplyComment(comment.author, comment.id)}
-    >
-      Trả lời
-    </Button>
-    {comment.replies && comment.replies.length > 0 && (
-      <Box marginTop={2}>
-        {comment.replies.map((reply, index) => (
-          <Comment
-            key={index}
-            comment={reply}
-            handleReplyComment={handleReplyComment}
-          />
-        ))}
-      </Box>
-    )}
-  </Paper>
-);
+  return (
+    <Paper elevation={1} style={{ padding: "16px", marginBottom: "8px" }}>
+      <Typography variant="body1">
+        <strong>{comment.author}</strong>
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        {comment.date}
+      </Typography>
+      <Typography variant="body1" style={{ marginTop: "8px" }}>
+        {comment.content}
+      </Typography>
+      <Button
+        style={{ marginTop: "8px" }}
+        onClick={() => handleReplyComment(comment.author, comment.id)}
+      >
+        Trả lời
+      </Button>
+      
+      {/* Conditionally render delete button */}
+      {userId === comment.userId && (
+        <Button
+          style={{ marginTop: "8px" }}
+          onClick={() => handleDeleteComment(comment.id)} // Trigger delete action
+        >
+          Xóa
+        </Button>
+      )}
+
+      {comment.replies && comment.replies.length > 0 && (
+        <Box marginTop={2}>
+          {comment.replies.map((reply, index) => (
+            <Comment
+              key={index}
+              comment={reply}
+              handleReplyComment={handleReplyComment}
+              handleDeleteComment={handleDeleteComment} // Pass down delete handler to replies
+            />
+          ))}
+        </Box>
+      )}
+    </Paper>
+  );
+};
+
 
 // Main component function
 function Coment({ data }) {
@@ -137,7 +152,22 @@ function Coment({ data }) {
       alert("Đã xảy ra lỗi trong quá trình đăng ký");
     }
   };
+  const handleDeleteComment = async (commentId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa bình luận này?")) {
+      try {
+        // Assuming you have a deleteComment API method
+        const res = await commentApi.deleteComment(commentId);
 
+          setCommentsData((prevComments) =>
+            prevComments.filter((comment) => comment.id !== commentId)
+          );
+      } catch (error) {
+        console.log("Lỗi xóa bình luận:", error);
+        alert("Đã xảy ra lỗi trong quá trình xóa bình luận");
+      }
+    }
+  };
+  
   // Submit reply comment
   const handleSubmitReplyComment = async () => {
     if (!question1.trim()) {
@@ -182,10 +212,11 @@ function Coment({ data }) {
         {commentsData &&
           commentsData.map((comment, index) => (
             <Comment
-              key={index}
-              comment={comment}
-              handleReplyComment={handleReplyComment}
-            />
+            key={index}
+            comment={comment}
+            handleReplyComment={handleReplyComment}
+            handleDeleteComment={handleDeleteComment} // Pass down delete handler
+          />
           ))}
         <Box marginTop={2}>
           <TextField

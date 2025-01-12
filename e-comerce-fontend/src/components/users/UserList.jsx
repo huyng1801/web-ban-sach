@@ -131,7 +131,7 @@ const UserList = () => {
 
   return (
     <div>
-      <h2>User Management</h2>
+      <h2>Quản lý người dùng</h2>
       
       {/* Users Table */}
       <TableContainer component={Paper}>
@@ -139,12 +139,12 @@ const UserList = () => {
           <TableHead>
             <TableRow>
               <TableCell>Email</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>Full Name</TableCell>
-              <TableCell>Mobile</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Tên đăng nhập</TableCell>
+              <TableCell>Họ và tên</TableCell>
+              <TableCell>Số điện thoại</TableCell>
+              <TableCell>Vai trò</TableCell>
+              <TableCell>Ngày tạo</TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -174,7 +174,7 @@ const UserList = () => {
       {isFormOpen && (
         <div style={styles.modal} onClick={() => setFormOpen(false)}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h3>Edit User</h3>
+            <h3>Chỉnh sửa người dùng</h3>
             <form onSubmit={handleSubmit}>
               <div style={styles.formGroup}>
                 <label style={styles.label}>Email</label>
@@ -187,7 +187,7 @@ const UserList = () => {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Username</label>
+                <label style={styles.label}>Tên đăng nhập</label>
                 <input
                   style={styles.input}
                   type="text"
@@ -196,7 +196,7 @@ const UserList = () => {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Full Name</label>
+                <label style={styles.label}>Họ và tên</label>
                 <input
                   style={styles.input}
                   type="text"
@@ -205,7 +205,7 @@ const UserList = () => {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Mobile</label>
+                <label style={styles.label}>Số điện thoại</label>
                 <input
                   style={styles.input}
                   type="text"
@@ -214,14 +214,14 @@ const UserList = () => {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Role</label>
+                <label style={styles.label}>Vai trò</label>
                 <select
                   style={styles.input}
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 >
-                  <option value="ROLE_USER">User</option>
-                  <option value="ROLE_ADMIN">Admin</option>
+                  <option value="ROLE_USER">Người dùng</option>
+                  <option value="ROLE_ADMIN">Quản trị viên</option>
                 </select>
               </div>
               <div style={styles.buttonGroup}>
@@ -230,13 +230,13 @@ const UserList = () => {
                   style={{ ...styles.button, backgroundColor: '#f0f0f0' }}
                   onClick={() => setFormOpen(false)}
                 >
-                  Cancel
+                  Hủy
                 </button>
                 <button
                   type="submit"
                   style={{ ...styles.button, backgroundColor: '#1976d2', color: 'white' }}
                 >
-                  Save Changes
+                  Lưu thay đổi
                 </button>
               </div>
             </form>
@@ -248,20 +248,20 @@ const UserList = () => {
       {isDeleteModalOpen && (
         <div style={styles.modal} onClick={() => setDeleteModalOpen(false)}>
           <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h3>Delete User</h3>
-            <p>Are you sure you want to delete user {selectedUser?.email}?</p>
+            <h3>Xóa người dùng</h3>
+            <p>Bạn có chắc chắn muốn xóa người dùng {selectedUser?.email}?</p>
             <div style={styles.buttonGroup}>
               <button
                 style={{ ...styles.button, backgroundColor: '#f0f0f0' }}
                 onClick={() => setDeleteModalOpen(false)}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 style={{ ...styles.button, backgroundColor: '#dc3545', color: 'white' }}
                 onClick={handleDeleteConfirm}
               >
-                Delete
+                Xóa
               </button>
             </div>
           </div>

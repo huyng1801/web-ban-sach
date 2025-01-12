@@ -39,21 +39,22 @@ const useStyles = makeStyles((theme) => ({
 
 function ProductInfo({ product = {} }) {
   const classes = useStyles();
-  const { productName, description, price, discountedPrice } = product;
-
+  const { productName, author, brand, description, price, discountedPrice } = product;
+console.log(product);
   return (
     <Box className={classes.root}>
       <Typography component="h1" variant="h4">
-        {productName}
+        {productName} 
       </Typography>
 
-      {/* <Typography
+      <Typography
         variant="body2"
-        className={classes.description}
+        className={classes.author}
         style={{ margin: "5px 0px" }}
       >
-        {description}
-      </Typography> */}
+        Tác giả: {author}
+      </Typography>
+
 
       <Box className={classes.priceBox}>
         <Box component="span" className={classes.salePrice}>

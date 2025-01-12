@@ -27,7 +27,10 @@ const commentApi = {
     const url = `comments/${parentId}/replies`;
     return axiosClient.post(url,replyCommentData );
   },
-  
+  deleteComment(commentId) {
+    const url = `comments/${commentId}`;
+    return axiosClient.delete(url);
+  },
 };
 
 export default commentApi;

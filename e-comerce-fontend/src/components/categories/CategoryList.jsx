@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -39,20 +39,19 @@ const CategoryList = () => {
     loadCategories();
   }, []);
 
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     try {
       const data = await categoryService.getAllCategories();
       setCategories(data);
     } catch (error) {
       console.error('Lỗi khi tải danh mục:', error);
     }
-  };
+  }, []);
 
   const handleOpen = (category = null) => {
-    console.log(category);
     if (category) {
       setFormData(category);
-      setSelectedCategory(category);
+       setSelectedCategory(category);
     } else {
       setFormData({ name: '', parentCategoryId: '', level: 0 });
       setSelectedCategory(null);
@@ -105,21 +104,50 @@ const CategoryList = () => {
     setCategoryToDelete(null);
   };
 
-  // Lọc các danh mục cha có sẵn, không bao gồm danh mục hiện tại và các danh mục con
-  const getAvailableParents = (currentId = null) => {
-    return categories.filter(category => {
-      if (currentId === category.id) return false;
-      if (currentId) {
-        // Không cho phép chọn danh mục con làm danh mục cha
-        let parent = categories.find(c => c.id === category.parentCategoryId);
-        while (parent) {
-          if (parent.id === currentId) return false;
-          parent = categories.find(c => c.id === parent.parentCategoryId);
-        }
-      }
-      return true;
+// Hàm đệ quy để lấy tất cả các danh mục con của một danh mục
+const getAllDescendants = (categoryId, categories) => {
+  const descendants = [];
+  const findDescendants = (id) => {
+    const children = categories.filter(category => category.parentCategoryId === id);
+    children.forEach(child => {
+      descendants.push(child);
+      findDescendants(child.id);
     });
   };
+  findDescendants(categoryId);
+  return descendants;
+};
+
+// Lọc các danh mục cha có sẵn, không bao gồm danh mục hiện tại và các danh mục con của nó
+const getAvailableParents = (currentId = null) => {
+  // Lấy tất cả các danh mục con của danh mục hiện tại
+  const descendants = getAllDescendants(currentId, categories);
+  // Lọc các danh mục không phải là danh mục hiện tại và không phải là các danh mục con của nó
+  return categories.filter(category => {
+    return category.id !== currentId && !descendants.some(descendant => descendant.id === category.id);
+  });
+};
+
+
+  // Memoizing TableRow for better performance when there are lots of rows
+  const CategoryRow = React.memo(({ category }) => (
+    <TableRow key={category.id}>
+      <TableCell>{category.id}</TableCell>
+      <TableCell>{category.name}</TableCell>
+      <TableCell>
+        {categories.find(c => c.id === category.parentCategoryId)?.name || '-'}
+      </TableCell>
+      <TableCell>{category.level}</TableCell>
+      <TableCell>
+        <IconButton onClick={() => handleOpen(category)}>
+          <Edit />
+        </IconButton>
+        <IconButton onClick={() => handleDeleteClick(category)}>
+          <Delete />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ));
 
   return (
     <div>
@@ -145,22 +173,7 @@ const CategoryList = () => {
           </TableHead>
           <TableBody>
             {categories.map((category) => (
-              <TableRow key={category.id}>
-                <TableCell>{category.id}</TableCell>
-                <TableCell>{category.name}</TableCell>
-                <TableCell>
-                  {categories.find(c => c.id === category.parentCategoryId)?.name || '-'}
-                </TableCell>
-                <TableCell>{category.level}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleOpen(category)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteClick(category)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+              <CategoryRow key={category.id} category={category} />
             ))}
           </TableBody>
         </Table>
@@ -211,7 +224,7 @@ const CategoryList = () => {
           <Typography>
             Bạn có chắc chắn muốn xóa danh mục "{categoryToDelete?.name}" không?
             {categoryToDelete && categories.some(c => c.parentCategoryId === categoryToDelete.id) && (
-              <span style={{ color: 'red', display: 'block', marginTop: '10px' }}>
+              <span style={{ color: 'red', display: 'block', marginTop: '10px' }} >
                 Cảnh báo: Danh mục này có các danh mục con sẽ bị xóa!
               </span>
             )}
